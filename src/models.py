@@ -17,11 +17,16 @@ class User(Base):
     firstname = Column(String(250), nullable=False)
     lastname = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
+    followers = relationship('Follower')
+    posts = relationship('Post')
+
 
 class Post(Base):
     __tablename__ = 'post'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
+    media = relationship("Media", uselist=False, back_populates="post")
+    comments = relationship('Comment')
 
 class Comment(Base):
     __tablename__ = 'comment'
@@ -32,6 +37,7 @@ class Comment(Base):
 
 class Follower(Base):
     __tablename__ = 'follower'
+    id = Column(Integer, primary_key=True)
     user_from_id = Column(Integer, ForeignKey('user.id'))
     user_to_id = Column(Integer, ForeignKey('user.id'))
 
@@ -43,6 +49,7 @@ class Media(Base):
     mtype = Column(Enum, nullable=False)
     url = Column(String(250), nullable=False)
     post_id = Column(Integer, ForeignKey('post.id'))
+    posts = relationship("Post", back_populates="media")
 
     def to_dict(self):
         return {}
